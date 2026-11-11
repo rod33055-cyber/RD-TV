@@ -236,6 +236,7 @@ class MainActivity : Activity() {
                 }
                 visibility = View.GONE
                 isFocusable = true
+                isFocusableInTouchMode = true
             }
 
             val title = TextView(this).apply {
