@@ -164,7 +164,7 @@ class MainActivity : Activity() {
 
         playerView = PlayerView(this).apply {
             player = this@MainActivity.player
-            useController = true
+            useController = false
             setBackgroundColor(Color.BLACK)
             isFocusable = true
         }
