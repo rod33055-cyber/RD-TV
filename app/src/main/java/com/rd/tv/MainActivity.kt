@@ -359,32 +359,31 @@ class MainActivity : Activity() {
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (wide && event.action == KeyEvent.ACTION_DOWN) {
-            if (event.keyCode == KeyEvent.KEYCODE_BACK && overlayVisible) {
-                toggleOverlay()
-                return true
-            }
 
-            if ((event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
-                event.keyCode == KeyEvent.KEYCODE_ENTER) &&
-                !overlayVisible &&
-                (playerFrame.hasFocus() ||
-                currentFocus == null)
-            ) {
-                toggleOverlay()
-                return true
-            }
-        }
-
-        if (!wide && phoneFullscreen &&
-            event.action == KeyEvent.ACTION_DOWN &&
-            event.keyCode == KeyEvent.KEYCODE_BACK
-        ) {
-            togglePhoneFullscreen()
+        if (event.keyCode == KeyEvent.KEYCODE_BACK && overlayVisible) {
+            toggleOverlay()
             return true
         }
 
-        return super.dispatchKeyEvent(event)
+        if ((event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
+             event.keyCode == KeyEvent.KEYCODE_ENTER) &&
+            !overlayVisible
+        ) {
+            toggleOverlay()
+            return true
+        }
     }
+
+    if (!wide && phoneFullscreen &&
+        event.action == KeyEvent.ACTION_DOWN &&
+        event.keyCode == KeyEvent.KEYCODE_BACK
+    ) {
+        togglePhoneFullscreen()
+        return true
+    }
+
+    return super.dispatchKeyEvent(event)
+}
 
     private fun renderCategories() {
         categoryBar.removeAllViews()
