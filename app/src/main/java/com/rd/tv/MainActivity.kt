@@ -254,6 +254,8 @@ class MainActivity : Activity() {
                 addView(overlayCategories)
             }
 
+            scroll.removeView(channelList)
+
             val overlayScroll = ScrollView(this).apply {
                 isFillViewport = true
                 addView(channelList)
