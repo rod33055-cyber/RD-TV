@@ -679,9 +679,16 @@ private fun showPhonePairingDialog() {
     }
 
     try {
-        pairingServer?.start(
-            NanoHTTPD.SOCKET_READ_TIMEOUT, false
-        )
+        if (pairingServerStarted) {
+    pairingServer?.stop()
+    pairingServerStarted = false
+}
+
+pairingServer?.start(
+    NanoHTTPD.SOCKET_READ_TIMEOUT, false
+)
+
+pairingServerStarted = true
 
         val link = "http://$ip:8765/?token=$pairingToken"
         val matrix = QRCodeWriter().encode(
