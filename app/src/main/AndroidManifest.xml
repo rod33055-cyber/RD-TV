@@ -12,7 +12,6 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="landscape"
             android:exported="true">
 
             <intent-filter>
