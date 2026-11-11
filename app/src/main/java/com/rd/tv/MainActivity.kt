@@ -586,7 +586,7 @@ private fun showPhonePairingDialog() {
         return
     }
 
-    pairingServer = object : NanoHTTPD(8765) {
+    pairingServer = object : NanoHTTPD(0) {
         override fun serve(
             session: IHTTPSession
         ): NanoHTTPD.Response {
@@ -690,7 +690,8 @@ pairingServer?.start(
 
 pairingServerStarted = true
 
-        val link = "http://$ip:8765/?token=$pairingToken"
+        val port = pairingServer?.listeningPort ?: 0
+        val link = "http://$ip:$port/?token=$pairingToken"
         val matrix = QRCodeWriter().encode(
             link, BarcodeFormat.QR_CODE, 600, 600
         )
