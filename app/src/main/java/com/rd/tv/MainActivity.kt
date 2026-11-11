@@ -344,6 +344,9 @@ class MainActivity : Activity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN) {
+           Toast.makeText(this, "KEY = ${event.keyCode}", Toast.LENGTH_SHORT).show()
+        }
         if (wide && event.action == KeyEvent.ACTION_DOWN) {
 
         if (event.keyCode == KeyEvent.KEYCODE_BACK && overlayVisible) {
