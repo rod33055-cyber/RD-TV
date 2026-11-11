@@ -461,6 +461,7 @@ private fun toggleOverlay() {
                 setTextColor(white)
                 setPadding(dp(8), dp(8), dp(4), dp(8))
                 isFocusable = true
+                isFocusableInTouchMode = true
                 isClickable = true
                 setOnClickListener {
                     playChannel(channel)
