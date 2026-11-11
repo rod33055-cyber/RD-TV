@@ -341,22 +341,6 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun toggleOverlay() {
-        if (!wide) return
-
-        overlayVisible = !overlayVisible
-        overlayPanel.visibility =
-            if (overlayVisible) View.VISIBLE else View.GONE
-
-        if (overlayVisible) {
-            renderCategories()
-            renderChannels()
-            overlayPanel.requestFocus()
-        } else {
-            playerFrame.requestFocus()
-        }
-    }
-
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (wide && event.action == KeyEvent.ACTION_DOWN) {
 
