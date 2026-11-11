@@ -117,6 +117,13 @@ class MainActivity : Activity() {
             setBackgroundColor(blue)
             setOnClickListener { showChannelDialog() }
         }
+       
+        val qrButton = Button(this).apply {
+    text = "📱 ربط الهاتف"
+    setTextColor(white)
+    setBackgroundColor(card)
+    setOnClickListener { showPhonePairingDialog() }
+        }
 
         fullButton = Button(this).apply {
             text = "⛶"
@@ -128,6 +135,7 @@ class MainActivity : Activity() {
 
         header.addView(logo, LinearLayout.LayoutParams(0, dp(55), 1f))
         header.addView(addButton)
+        header.addView(qrButton)
         header.addView(fullButton)
         root.addView(header)
 
