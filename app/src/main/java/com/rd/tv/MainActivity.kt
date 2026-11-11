@@ -163,10 +163,11 @@ class MainActivity : Activity() {
         playerFrame = FrameLayout(this)
 
         playerView = PlayerView(this).apply {
-            player = this@MainActivity.player
-            useController = false
-            setBackgroundColor(Color.BLACK)
-            isFocusable = true
+    player = this@MainActivity.player
+    useController = false
+    setBackgroundColor(Color.BLACK)
+    isFocusable = false
+    isFocusableInTouchMode = false
         }
 
         playerFrame.addView(
