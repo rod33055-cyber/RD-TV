@@ -581,8 +581,6 @@ private fun showPhonePairingDialog() {
         return
     }
 
-    pairingServer?.stop()
-
     pairingServer = object : NanoHTTPD(8765) {
         override fun serve(
             session: IHTTPSession
