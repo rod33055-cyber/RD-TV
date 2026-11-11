@@ -220,14 +220,17 @@ class MainActivity : Activity() {
             )
         }
 
-        if (wide) {
-            mainContent.addView(
-                playerFrame,
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
-                )
-            )
-
+        
+if (wide) {
+    mainContent.addView(
+        playerFrame,
+        LinearLayout.LayoutParams(
+            0,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            1f
+        )
+    )
+    
             overlayPanel = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dp(10), dp(8), dp(10), dp(8))
