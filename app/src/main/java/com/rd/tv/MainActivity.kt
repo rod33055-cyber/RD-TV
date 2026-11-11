@@ -2,6 +2,13 @@
 package com.rd.tv
 
 import android.app.Activity
+import android.graphics.Bitmap
+import android.net.wifi.WifiManager
+import android.text.format.Formatter
+import android.widget.ImageView
+import fi.iki.elonen.NanoHTTPD
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
 import android.app.AlertDialog
 import android.os.Bundle
 import android.graphics.Color
