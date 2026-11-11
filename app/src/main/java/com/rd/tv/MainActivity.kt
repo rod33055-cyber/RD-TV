@@ -385,9 +385,11 @@ private fun toggleOverlay() {
         overlayPanel.isFocusable = true
         overlayPanel.isFocusableInTouchMode = true
 
-        channelList.getChildAt(0)
-            ?.getChildAt(0)
-            ?.requestFocus()
+    channelList.getChildAt(0)?.let { first ->
+      (first as? ViewGroup)
+        ?.getChildAt(0)
+        ?.requestFocus()
+        }
     } else {
         playerFrame.requestFocus()
     }
