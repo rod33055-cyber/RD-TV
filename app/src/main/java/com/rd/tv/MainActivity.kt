@@ -348,27 +348,26 @@ if (wide) {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_DOWN) {
-           Toast.makeText(this, "KEY = ${event.keyCode}", Toast.LENGTH_SHORT).show()
-        }
-        if (wide && event.action == KeyEvent.ACTION_DOWN) {
+    if (wide && event.action == KeyEvent.ACTION_DOWN) {
 
         if (event.keyCode == KeyEvent.KEYCODE_BACK && overlayVisible) {
             toggleOverlay()
             return true
         }
 
-        if ((event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
+        if (
+            (event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
              event.keyCode == KeyEvent.KEYCODE_ENTER) &&
             !overlayVisible
         ) {
-            Toast.makeText(this, "دخل شرط فتح القائمة", Toast.LENGTH_SHORT).show()
             toggleOverlay()
             return true
         }
     }
 
-    if (!wide && phoneFullscreen &&
+    if (
+        !wide &&
+        phoneFullscreen &&
         event.action == KeyEvent.ACTION_DOWN &&
         event.keyCode == KeyEvent.KEYCODE_BACK
     ) {
@@ -377,7 +376,7 @@ if (wide) {
     }
 
     return super.dispatchKeyEvent(event)
-}
+    }
 
 private fun toggleOverlay() {
     if (!wide) return
