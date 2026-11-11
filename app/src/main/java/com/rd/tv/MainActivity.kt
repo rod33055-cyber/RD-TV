@@ -725,6 +725,7 @@ pairingServerStarted = true
 
     } catch (e: Exception) {
         pairingServer?.stop()
+        pairingServerStarted = false
         pairingServer = null
         Toast.makeText(
             this, "تعذر تشغيل الربط: ${e.message}",
