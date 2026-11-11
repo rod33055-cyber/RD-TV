@@ -561,6 +561,171 @@ class MainActivity : Activity() {
         dialog.show()
     }
 
+    
+private fun showPhonePairingDialog() {
+    pairingToken = UUID.randomUUID().toString()
+
+    val wifi = applicationContext
+        .getSystemService(WIFI_SERVICE) as WifiManager
+
+    val ip = Formatter.formatIpAddress(
+        wifi.connectionInfo.ipAddress
+    )
+
+    if (ip == "0.0.0.0") {
+        Toast.makeText(
+            this, "اتصل بشبكة Wi-Fi أولاً",
+            Toast.LENGTH_LONG
+        ).show()
+        return
+    }
+
+    pairingServer?.stop()
+
+    pairingServer = object : NanoHTTPD(8765) {
+        override fun serve(
+            session: IHTTPSession
+        ): NanoHTTPD.Response {
+
+            if (session.uri == "/add" &&
+                session.method == Method.POST
+            ) {
+                try {
+                    val files = HashMap<String, String>()
+                    session.parseBody(files)
+
+                    val params = session.parameters
+                    val token = params["token"]?.firstOrNull()
+
+                    if (token != pairingToken) {
+                        return newFixedLengthResponse(
+                            Response.Status.FORBIDDEN,
+                            "text/plain",
+                            "رمز الربط غير صحيح"
+                        )
+                    }
+
+                    val name = params["name"]?.firstOrNull()?.trim() ?: ""
+                    val url = params["url"]?.firstOrNull()?.trim() ?: ""
+                    val category = params["category"]?.firstOrNull() ?: ""
+
+                    if (name.isEmpty() || url.isEmpty() ||
+                        category !in categories.drop(1)
+                    ) {
+                        return newFixedLengthResponse(
+                            "الرجاء إكمال البيانات بشكل صحيح"
+                        )
+                    }
+
+                    runOnUiThread {
+                        channels.add(Channel(name, url, category))
+                        saveChannels()
+                        selectedCategory = "الكل"
+                        renderCategories()
+                        renderChannels()
+                    }
+
+                    return newFixedLengthResponse(
+                        "تمت إضافة القناة بنجاح. يمكنك إغلاق هذه الصفحة."
+                    )
+
+                } catch (e: Exception) {
+                    return newFixedLengthResponse(
+                        Response.Status.INTERNAL_ERROR,
+                        "text/plain",
+                        "حدث خطأ أثناء الإضافة"
+                    )
+                }
+            }
+
+            val options = categories.drop(1).joinToString("") {
+                "<option value=\"$it\">$it</option>"
+            }
+
+            val html = """
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <meta charset="UTF-8">
+                <title>RD-TV</title>
+                <body style="background:#09101c;color:white;font-family:Arial;padding:25px">
+                <h2 style="color:#0091ff">RD-TV</h2>
+                <h3>إضافة قناة جديدة</h3>
+                <form action="/add" method="POST">
+                <input type="hidden" name="token" value="$pairingToken">
+                <p>اسم القناة</p>
+                <input name="name" required style="width:100%;padding:12px;box-sizing:border-box">
+                <p>رابط البث</p>
+                <input name="url" type="url" required style="width:100%;padding:12px;box-sizing:border-box">
+                <p>المجموعة</p>
+                <select name="category" style="width:100%;padding:12px">
+                $options
+                </select>
+                <br><br>
+                <button style="background:#0091ff;color:white;padding:14px;width:100%;border:0">
+                إضافة القناة
+                </button>
+                </form>
+                </body>
+                </html>
+            """.trimIndent()
+
+            return newFixedLengthResponse(
+                Response.Status.OK,
+                "text/html; charset=utf-8",
+                html
+            )
+        }
+    }
+
+    try {
+        pairingServer?.start(
+            NanoHTTPD.SOCKET_READ_TIMEOUT, false
+        )
+
+        val link = "http://$ip:8765/?token=$pairingToken"
+        val matrix = QRCodeWriter().encode(
+            link, BarcodeFormat.QR_CODE, 600, 600
+        )
+
+        val bitmap = Bitmap.createBitmap(
+            600, 600, Bitmap.Config.ARGB_8888
+        )
+
+        for (x in 0 until 600) {
+            for (y in 0 until 600) {
+                bitmap.setPixel(
+                    x, y,
+                    if (matrix[x, y]) Color.BLACK else Color.WHITE
+                )
+            }
+        }
+
+        val image = ImageView(this).apply {
+            setImageBitmap(bitmap)
+            setPadding(dp(15), dp(15), dp(15), dp(15))
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("ربط الهاتف")
+            .setMessage("امسح الرمز بكاميرا هاتفك، وتأكد أن الجهازين على نفس Wi-Fi")
+            .setView(image)
+            .setNegativeButton("إغلاق") { _, _ ->
+                pairingServer?.stop()
+                pairingServer = null
+            }
+            .show()
+
+    } catch (e: Exception) {
+        pairingServer?.stop()
+        pairingServer = null
+        Toast.makeText(
+            this, "تعذر تشغيل الربط: ${e.message}",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+}
+
     private fun confirmDelete(index: Int) {
         AlertDialog.Builder(this)
             .setTitle("حذف القناة")
