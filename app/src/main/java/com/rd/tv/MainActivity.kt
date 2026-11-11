@@ -369,6 +369,29 @@ class MainActivity : Activity() {
     return super.dispatchKeyEvent(event)
 }
 
+private fun toggleOverlay() {
+    if (!wide) return
+
+    overlayVisible = !overlayVisible
+
+    overlayPanel.visibility =
+        if (overlayVisible) View.VISIBLE else View.GONE
+
+    if (overlayVisible) {
+        renderCategories()
+        renderChannels()
+
+        overlayPanel.isFocusable = true
+        overlayPanel.isFocusableInTouchMode = true
+
+        channelList.getChildAt(0)
+            ?.getChildAt(0)
+            ?.requestFocus()
+    } else {
+        playerFrame.requestFocus()
+    }
+}
+
     private fun renderCategories() {
         categoryBar.removeAllViews()
 
