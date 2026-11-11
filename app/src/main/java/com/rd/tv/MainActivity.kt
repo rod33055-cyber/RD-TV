@@ -366,9 +366,8 @@ class MainActivity : Activity() {
             if ((event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
                 event.keyCode == KeyEvent.KEYCODE_ENTER) &&
                 !overlayVisible &&
-                (currentFocus === playerFrame ||
-                 currentFocus === playerView ||
-                 currentFocus == null)
+                (playerFrame.hasFocus() ||
+                currentFocus == null)
             ) {
                 toggleOverlay()
                 return true
