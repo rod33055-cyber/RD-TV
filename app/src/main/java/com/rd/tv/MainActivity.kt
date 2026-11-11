@@ -56,6 +56,7 @@ class MainActivity : Activity() {
     private var wide = false
     private var overlayVisible = false
     private var phoneFullscreen = false
+    private var pairingServer: NanoHTTPD? = null
 
     private val categories = listOf(
         "الكل", "beIN SPORTS", "ألوان الرياضية",
