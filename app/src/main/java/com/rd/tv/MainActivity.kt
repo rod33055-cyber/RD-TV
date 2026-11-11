@@ -58,6 +58,7 @@ class MainActivity : Activity() {
     private var overlayVisible = false
     private var phoneFullscreen = false
     private var pairingServer: NanoHTTPD? = null
+    private var pairingServerStarted = false
     private var pairingToken = ""
 
     private val categories = listOf(
