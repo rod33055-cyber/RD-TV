@@ -75,6 +75,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         wide = resources.configuration.screenWidthDp >= 600
+        Toast.makeText(this, "WIDE = $wide", Toast.LENGTH_LONG).show()
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
