@@ -1,6 +1,7 @@
 
 package com.rd.tv
 
+import java.util.UUID
 import android.app.Activity
 import android.graphics.Bitmap
 import android.net.wifi.WifiManager
@@ -57,6 +58,7 @@ class MainActivity : Activity() {
     private var overlayVisible = false
     private var phoneFullscreen = false
     private var pairingServer: NanoHTTPD? = null
+    private var pairingToken = ""
 
     private val categories = listOf(
         "الكل", "beIN SPORTS", "ألوان الرياضية",
