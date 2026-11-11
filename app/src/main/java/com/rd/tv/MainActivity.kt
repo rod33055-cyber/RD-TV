@@ -566,6 +566,10 @@ class MainActivity : Activity() {
     
 private fun showPhonePairingDialog() {
     pairingToken = UUID.randomUUID().toString()
+    if (pairingServerStarted) {
+    pairingServer?.stop()
+    pairingServerStarted = false
+    }
 
     val wifi = applicationContext
         .getSystemService(WIFI_SERVICE) as WifiManager
@@ -679,10 +683,6 @@ private fun showPhonePairingDialog() {
     }
 
     try {
-        if (pairingServerStarted) {
-    pairingServer?.stop()
-    pairingServerStarted = false
-}
 
 pairingServer?.start(
     NanoHTTPD.SOCKET_READ_TIMEOUT, false
@@ -719,6 +719,7 @@ pairingServerStarted = true
             .setView(image)
             .setNegativeButton("إغلاق") { _, _ ->
                 pairingServer?.stop()
+                pairingServerStarted = false
                 pairingServer = null
             }
             .show()
