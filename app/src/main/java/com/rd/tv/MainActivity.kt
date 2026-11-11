@@ -1,3 +1,4 @@
+
 package com.rd.tv
 
 import android.app.Activity
@@ -5,6 +6,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.graphics.Color
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.text.InputType
@@ -15,9 +17,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 data class Channel(
-    val name: String,
-    val url: String,
-    val category: String
+    var name: String,
+    var url: String,
+    var category: String
 )
 
 class MainActivity : Activity() {
@@ -26,6 +28,7 @@ class MainActivity : Activity() {
     private lateinit var playerView: PlayerView
     private lateinit var channelList: LinearLayout
     private lateinit var categoryBar: LinearLayout
+
     private val channels = mutableListOf<Channel>()
     private var selectedCategory = "الكل"
 
@@ -39,39 +42,53 @@ class MainActivity : Activity() {
     )
 
     private val blue = Color.rgb(0, 145, 255)
-    private val backgroundColor = Color.rgb(10, 13, 20)
+    private val bg = Color.rgb(9, 13, 21)
+    private val card = Color.rgb(24, 32, 45)
+    private val white = Color.WHITE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         player = ExoPlayer.Builder(this).build()
         loadChannels()
         buildInterface()
     }
 
     private fun buildInterface() {
+        val wide = resources.configuration.screenWidthDp >= 600
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(backgroundColor)
-            setPadding(14, 12, 14, 12)
+            setBackgroundColor(bg)
+            setPadding(dp(12), dp(8), dp(12), dp(8))
         }
 
-        val header = TextView(this).apply {
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val logo = TextView(this).apply {
             text = "RD-TV"
             textSize = 27f
+            setTypeface(null, android.graphics.Typeface.BOLD)
             setTextColor(blue)
-            gravity = Gravity.CENTER
-            setPadding(8, 12, 8, 12)
+            gravity = Gravity.CENTER_VERTICAL
         }
-        root.addView(header)
 
         val addButton = Button(this).apply {
             text = "+ إضافة قناة"
-            setTextColor(Color.WHITE)
+            setTextColor(white)
             setBackgroundColor(blue)
-            setOnClickListener { showAddChannelDialog() }
+            setOnClickListener { showChannelDialog() }
         }
-        root.addView(addButton)
+
+        header.addView(
+            logo,
+            LinearLayout.LayoutParams(0, dp(58), 1f)
+        )
+        header.addView(addButton)
+
+        root.addView(header)
 
         categoryBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -81,35 +98,81 @@ class MainActivity : Activity() {
             isHorizontalScrollBarEnabled = false
             addView(categoryBar)
         }
+
         root.addView(categoryScroll)
+
+        val content = LinearLayout(this).apply {
+            orientation = if (wide)
+                LinearLayout.HORIZONTAL
+            else
+                LinearLayout.VERTICAL
+        }
 
         playerView = PlayerView(this).apply {
             player = this@MainActivity.player
             useController = true
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(220)
-            )
+            setBackgroundColor(Color.BLACK)
         }
-        root.addView(playerView)
-
-        val title = TextView(this).apply {
-            text = "قائمة القنوات"
-            textSize = 19f
-            setTextColor(Color.WHITE)
-            setPadding(8, 12, 8, 8)
-        }
-        root.addView(title)
 
         channelList = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
 
-        val scroll = ScrollView(this)
-        scroll.addView(channelList)
+        val listTitle = TextView(this).apply {
+            text = "قائمة القنوات"
+            textSize = 19f
+            setTextColor(white)
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setPadding(dp(5), dp(12), dp(5), dp(10))
+        }
+
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            addView(channelList)
+        }
+
+        val channelPanel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(listTitle)
+            addView(
+                scroll,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    0,
+                    1f
+                )
+            )
+        }
+
+        if (wide) {
+            content.addView(
+                playerView,
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 6f)
+            )
+            content.addView(
+                channelPanel,
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 4f)
+            )
+        } else {
+            content.addView(
+                playerView,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(220)
+                )
+            )
+            content.addView(
+                channelPanel,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    0,
+                    1f
+                )
+            )
+        }
 
         root.addView(
-            scroll,
+            content,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 0,
@@ -130,10 +193,10 @@ class MainActivity : Activity() {
             val button = Button(this).apply {
                 text = category
                 textSize = 12f
-                setTextColor(Color.WHITE)
+                setTextColor(white)
                 setBackgroundColor(
-                    if (selectedCategory == category) blue
-                    else Color.rgb(35, 42, 55)
+                    if (selectedCategory == category)
+                        blue else card
                 )
                 setOnClickListener {
                     selectedCategory = category
@@ -142,73 +205,102 @@ class MainActivity : Activity() {
                 }
             }
 
-            categoryBar.addView(
-                button,
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    dp(48)
-                )
-            )
+            categoryBar.addView(button)
         }
     }
 
     private fun renderChannels() {
         channelList.removeAllViews()
 
-        val visibleChannels = channels.filter {
+        val visible = channels.withIndex().filter {
             selectedCategory == "الكل" ||
-            it.category == selectedCategory
+                it.value.category == selectedCategory
         }
 
-        visibleChannels.forEach { channel ->
-            val button = Button(this).apply {
-                text = "▶  ${channel.name}"
-                textSize = 16f
-                gravity = Gravity.CENTER_VERTICAL
-                setTextColor(Color.WHITE)
-                setBackgroundColor(Color.rgb(28, 35, 47))
-                setOnClickListener {
-                    playChannel(channel)
-                }
-            }
-
-            channelList.addView(
-                button,
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(55)
-                ).apply {
-                    bottomMargin = dp(5)
-                }
-            )
-        }
-
-        if (visibleChannels.isEmpty()) {
+        if (visible.isEmpty()) {
             val empty = TextView(this).apply {
-                text = "ماكو قنوات بهذي المجموعة حالياً"
+                text = "ماكو قنوات حالياً\nاضغط إضافة قناة حتى تبدأ"
+                textSize = 15f
                 setTextColor(Color.LTGRAY)
                 gravity = Gravity.CENTER
-                setPadding(10, 20, 10, 20)
+                setPadding(dp(12), dp(30), dp(12), dp(30))
             }
             channelList.addView(empty)
         }
+
+        visible.forEach { entry ->
+            val index = entry.index
+            val channel = entry.value
+
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setBackgroundColor(card)
+                setPadding(dp(6), dp(5), dp(6), dp(5))
+            }
+
+            val name = TextView(this).apply {
+                text = "▶   ${channel.name}\n${channel.category}"
+                textSize = 15f
+                setTextColor(white)
+                setPadding(dp(8), dp(8), dp(4), dp(8))
+                isFocusable = true
+                setOnClickListener { playChannel(channel) }
+            }
+
+            val edit = Button(this).apply {
+                text = "✎"
+                setTextColor(blue)
+                setBackgroundColor(Color.TRANSPARENT)
+                setOnClickListener { showChannelDialog(index) }
+            }
+
+            val delete = Button(this).apply {
+                text = "×"
+                textSize = 20f
+                setTextColor(Color.rgb(255, 90, 90))
+                setBackgroundColor(Color.TRANSPARENT)
+                setOnClickListener { confirmDelete(index) }
+            }
+
+            row.addView(
+                name,
+                LinearLayout.LayoutParams(0, dp(65), 1f)
+            )
+            row.addView(edit)
+            row.addView(delete)
+
+            channelList.addView(
+                row,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = dp(6)
+                }
+            )
+        }
     }
 
-    private fun showAddChannelDialog() {
+    private fun showChannelDialog(index: Int = -1) {
+        val old = if (index >= 0) channels[index] else null
+
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 10, 20, 10)
+            setPadding(dp(18), dp(8), dp(18), dp(8))
         }
 
-        val nameInput = EditText(this).apply {
+        val name = EditText(this).apply {
             hint = "اسم القناة"
             setSingleLine()
+            setText(old?.name ?: "")
         }
 
-        val urlInput = EditText(this).apply {
+        val url = EditText(this).apply {
             hint = "رابط البث"
             inputType = InputType.TYPE_CLASS_TEXT or
                 InputType.TYPE_TEXT_VARIATION_URI
+            setText(old?.url ?: "")
         }
 
         val spinner = Spinner(this)
@@ -218,59 +310,76 @@ class MainActivity : Activity() {
             categories.drop(1)
         )
 
-        layout.addView(nameInput)
-        layout.addView(urlInput)
-        layout.addView(TextView(this).apply {
-            text = "مجموعة القناة"
-            setPadding(0, 12, 0, 4)
-        })
+        val oldPosition = categories.drop(1).indexOf(old?.category)
+        if (oldPosition >= 0) spinner.setSelection(oldPosition)
+
+        layout.addView(name)
+        layout.addView(url)
         layout.addView(spinner)
 
         AlertDialog.Builder(this)
-            .setTitle("إضافة قناة جديدة")
+            .setTitle(if (index >= 0) "تعديل القناة" else "إضافة قناة")
             .setView(layout)
             .setNegativeButton("إلغاء", null)
-            .setPositiveButton("حفظ") { _, _ ->
-                val name = nameInput.text.toString().trim()
-                val url = urlInput.text.toString().trim()
+            .setPositiveButton("حفظ", null)
+            .create()
+            .also { dialog ->
+                dialog.setOnShowListener {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                        .setOnClickListener {
+                            val n = name.text.toString().trim()
+                            val u = url.text.toString().trim()
 
-                if (name.isEmpty() || url.isEmpty()) {
-                    Toast.makeText(
-                        this,
-                        "اكتب اسم القناة والرابط",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    channels.add(
-                        Channel(
-                            name,
-                            url,
-                            spinner.selectedItem.toString()
-                        )
-                    )
-                    saveChannels()
-                    selectedCategory = "الكل"
-                    renderCategories()
-                    renderChannels()
+                            if (n.isEmpty() || u.isEmpty()) {
+                                Toast.makeText(
+                                    this,
+                                    "اكتب الاسم والرابط",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@setOnClickListener
+                            }
+
+                            val channel = Channel(
+                                n,
+                                u,
+                                spinner.selectedItem.toString()
+                            )
+
+                            if (index >= 0) {
+                                channels[index] = channel
+                            } else {
+                                channels.add(channel)
+                            }
+
+                            saveChannels()
+                            selectedCategory = "الكل"
+                            renderCategories()
+                            renderChannels()
+                            dialog.dismiss()
+                        }
                 }
+                dialog.show()
+            }
+    }
+
+    private fun confirmDelete(index: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("حذف القناة")
+            .setMessage("متأكد تريد حذف ${channels[index].name}؟")
+            .setNegativeButton("إلغاء", null)
+            .setPositiveButton("حذف") { _, _ ->
+                channels.removeAt(index)
+                saveChannels()
+                renderChannels()
             }
             .show()
     }
 
     private fun playChannel(channel: Channel) {
         try {
-            player.setMediaItem(
-                MediaItem.fromUri(channel.url)
-            )
+            player.setMediaItem(MediaItem.fromUri(channel.url))
             player.prepare()
             player.play()
-
-            Toast.makeText(
-                this,
-                "تشغيل ${channel.name}",
-                Toast.LENGTH_SHORT
-            ).show()
-
         } catch (e: Exception) {
             Toast.makeText(
                 this,
@@ -299,8 +408,7 @@ class MainActivity : Activity() {
 
     private fun loadChannels() {
         val saved = getSharedPreferences(
-            "rdtv",
-            MODE_PRIVATE
+            "rdtv", MODE_PRIVATE
         ).getString("channels", "[]")
 
         try {
@@ -308,7 +416,6 @@ class MainActivity : Activity() {
 
             for (i in 0 until array.length()) {
                 val item = array.getJSONObject(i)
-
                 channels.add(
                     Channel(
                         item.getString("name"),
@@ -322,9 +429,8 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun dp(value: Int): Int {
-        return (value * resources.displayMetrics.density).toInt()
-    }
+    private fun dp(value: Int): Int =
+        (value * resources.displayMetrics.density).toInt()
 
     override fun onDestroy() {
         player.release()
