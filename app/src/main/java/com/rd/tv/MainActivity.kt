@@ -358,6 +358,7 @@ class MainActivity : Activity() {
              event.keyCode == KeyEvent.KEYCODE_ENTER) &&
             !overlayVisible
         ) {
+            Toast.makeText(this, "دخل شرط فتح القائمة", Toast.LENGTH_SHORT).show()
             toggleOverlay()
             return true
         }
