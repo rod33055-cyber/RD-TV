@@ -432,17 +432,34 @@ if (wide) {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+
     if (wide && event.action == KeyEvent.ACTION_DOWN) {
 
-        if (event.keyCode == KeyEvent.KEYCODE_BACK && overlayVisible) {
-            toggleOverlay()
+        if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+
+            if (overlayVisible) {
+                toggleOverlay()
+                return true
+            }
+
+            if (!homeVisible) {
+                player.stop()
+
+                mainContent.visibility = View.GONE
+                homePanel.visibility = View.VISIBLE
+                homeVisible = true
+
+                return true
+            }
+
             return true
         }
 
         if (
             (event.keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
              event.keyCode == KeyEvent.KEYCODE_ENTER) &&
-            !overlayVisible
+            !overlayVisible &&
+            !homeVisible
         ) {
             toggleOverlay()
             return true
