@@ -92,10 +92,20 @@ class MainActivity : Activity() {
             }
         })
 
-        loadChannels()
-        buildInterface()
-    }
+loadChannels()
+buildInterface()
 
+val lastUrl = getSharedPreferences("rdtv", MODE_PRIVATE)
+    .getString("last_channel_url", null)
+
+val lastChannel = channels.find { it.url == lastUrl }
+
+if (lastChannel != null) {
+    playChannel(lastChannel)
+}
+  
+}
+    
     private fun buildInterface() {
     root = LinearLayout(this).apply {
     orientation = LinearLayout.VERTICAL
