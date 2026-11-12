@@ -190,9 +190,10 @@ homePanel.addView(homeTitle)
         setStroke(dp(1), Color.argb(90, 255, 255, 255))
     }
     setOnClickListener {
-        homePanel.visibility = View.GONE
-        mainContent.visibility = View.VISIBLE
-        toggleOverlay()
+    homePanel.visibility = View.GONE
+    homeVisible = false
+    mainContent.visibility = View.VISIBLE
+    toggleOverlay()
     }
 }
 
