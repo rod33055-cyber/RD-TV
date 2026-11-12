@@ -160,6 +160,23 @@ if (lastChannel != null) {
         header.addView(qrButton)
         header.addView(fullButton)
         root.addView(header)
+        homePanel = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    gravity = Gravity.CENTER
+    setPadding(dp(20), dp(20), dp(20), dp(20))
+    setBackgroundColor(Color.BLACK)
+}
+
+if (wide) {
+    root.addView(
+        homePanel,
+        LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            0,
+            1f
+        )
+    )
+}
 
         categoryBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
