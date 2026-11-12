@@ -49,6 +49,7 @@ class MainActivity : Activity() {
     private lateinit var phonePanel: LinearLayout
     private lateinit var mainContent: LinearLayout
     private lateinit var root: LinearLayout
+    private lateinit var homePanel: LinearLayout
     private lateinit var fullButton: Button
     private lateinit var exitFullButton: Button
 
@@ -56,6 +57,7 @@ class MainActivity : Activity() {
     private var selectedCategory = "الكل"
     private var wide = false
     private var overlayVisible = false
+    private var homeVisible = false
     private var phoneFullscreen = false
     private var pairingServer: NanoHTTPD? = null
     private var pairingServerStarted = false
