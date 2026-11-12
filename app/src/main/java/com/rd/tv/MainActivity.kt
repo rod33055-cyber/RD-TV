@@ -162,6 +162,7 @@ if (lastChannel != null) {
         root.addView(header)
         homePanel = LinearLayout(this).apply {
     orientation = LinearLayout.VERTICAL
+    visibility = View.GONE
     gravity = Gravity.CENTER
     setPadding(dp(20), dp(20), dp(20), dp(20))
     setBackgroundColor(Color.BLACK)
