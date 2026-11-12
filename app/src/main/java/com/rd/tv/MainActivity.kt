@@ -478,6 +478,14 @@ private fun toggleOverlay() {
                 isFocusable = true
                 isFocusableInTouchMode = true
                 isClickable = true
+                
+                setOnFocusChangeListener { view, hasFocus ->
+                  view.setBackgroundColor(
+                    if (hasFocus) Color.rgb(35, 105, 180)
+                    else Color.TRANSPARENT
+             )
+                }
+                
                 setOnClickListener {
                     playChannel(channel)
                     if (wide && overlayVisible) toggleOverlay()
