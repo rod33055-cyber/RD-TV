@@ -788,6 +788,10 @@ pairingServerStarted = true
         player.setMediaItem(MediaItem.fromUri(channel.url))
         player.prepare()
         player.play()
+        getSharedPreferences("rdtv", MODE_PRIVATE)
+    .edit()
+    .putString("last_channel_url", channel.url)
+    .apply()
 
         if (wide) {
             header.visibility = View.GONE
