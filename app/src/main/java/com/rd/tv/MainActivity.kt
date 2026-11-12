@@ -759,6 +759,7 @@ pairingServerStarted = true
     }
 }
 
+
     private fun confirmDelete(index: Int) {
         AlertDialog.Builder(this)
             .setTitle("حذف القناة")
@@ -773,16 +774,21 @@ pairingServerStarted = true
     }
 
     private fun playChannel(channel: Channel) {
-        try {
-            player.setMediaItem(MediaItem.fromUri(channel.url))
-            player.prepare()
-            player.play()
-        } catch (_: Exception) {
-            Toast.makeText(
-                this, "تعذر تشغيل القناة", Toast.LENGTH_LONG
-            ).show()
+    try {
+        player.setMediaItem(MediaItem.fromUri(channel.url))
+        player.prepare()
+        player.play()
+
+        if (wide) {
+            header.visibility = View.GONE
         }
+
+    } catch (_: Exception) {
+        Toast.makeText(
+            this, "تعذر تشغيل القناة", Toast.LENGTH_LONG
+        ).show()
     }
+}
 
     private fun saveChannels() {
         val array = JSONArray()
