@@ -493,6 +493,7 @@ private fun toggleOverlay() {
             }
 
             val edit = Button(this).apply {
+                visibility = if (wide) View.GONE else View.VISIBLE
                 text = "✎"
                 setTextColor(blue)
                 setBackgroundColor(Color.TRANSPARENT)
@@ -500,6 +501,7 @@ private fun toggleOverlay() {
             }
 
             val delete = Button(this).apply {
+                visibility = if (wide) View.GONE else View.VISIBLE
                 text = "×"
                 textSize = 20f
                 setTextColor(Color.RED)
