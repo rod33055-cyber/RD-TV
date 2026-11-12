@@ -167,17 +167,66 @@ if (lastChannel != null) {
     setPadding(dp(20), dp(20), dp(20), dp(20))
     setBackgroundColor(Color.BLACK)
 }
-
-if (wide) {
-    root.addView(
-        homePanel,
-        LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            0,
-            1f
-        )
-    )
+        
+        val homeTitle = TextView(this).apply {
+    text = "RD-TV"
+    textSize = 38f
+    typeface = Typeface.DEFAULT_BOLD
+    setTextColor(white)
+    gravity = Gravity.CENTER
+    setPadding(0, 0, 0, dp(30))
 }
+
+homePanel.addView(homeTitle)
+
+        val homeChannelsButton = Button(this).apply {
+    text = "📺  القنوات"
+    textSize = 19f
+    setTextColor(white)
+    isAllCaps = false
+    background = GradientDrawable().apply {
+        setColor(Color.argb(65, 255, 255, 255))
+        cornerRadius = dp(22).toFloat()
+        setStroke(dp(1), Color.argb(90, 255, 255, 255))
+    }
+    setOnClickListener {
+        homePanel.visibility = View.GONE
+        mainContent.visibility = View.VISIBLE
+        toggleOverlay()
+    }
+}
+
+homePanel.addView(
+    homeChannelsButton,
+    LinearLayout.LayoutParams(
+        dp(260),
+        dp(65)
+    ).apply {
+        bottomMargin = dp(15)
+    }
+)
+val homeQrButton = Button(this).apply {
+    text = "📱  ربط الهاتف QR"
+    textSize = 19f
+    setTextColor(white)
+    isAllCaps = false
+    background = GradientDrawable().apply {
+        setColor(Color.argb(65, 255, 255, 255))
+        cornerRadius = dp(22).toFloat()
+        setStroke(dp(1), Color.argb(90, 255, 255, 255))
+    }
+    setOnClickListener {
+        showPhonePairingDialog()
+    }
+}
+
+homePanel.addView(
+    homeQrButton,
+    LinearLayout.LayoutParams(
+        dp(260),
+        dp(65)
+    )
+)
 
         categoryBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
