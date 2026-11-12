@@ -97,10 +97,15 @@ class MainActivity : Activity() {
     }
 
     private fun buildInterface() {
-        root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(bg)
-            setPadding(dp(10), dp(6), dp(10), dp(6))
+    root = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    setBackgroundColor(Color.BLACK)
+
+    if (wide) {
+        setPadding(0, 0, 0, 0)
+    } else {
+        setPadding(dp(10), dp(6), dp(10), dp(6))
+    }
         }
 
         header = LinearLayout(this).apply {
